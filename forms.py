@@ -1,9 +1,9 @@
 from datetime import datetime
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL
 
-class ShowForm(Form):
+class ShowForm(FlaskForm):
     artist_id = StringField(
         'artist_id'
     )
@@ -16,7 +16,11 @@ class ShowForm(Form):
         default= datetime.today()
     )
 
-class VenueForm(Form):
+class VenueForm(FlaskForm):
+    def validate_phone(form, field):
+        if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data):
+            raise ValidationError("Invalid phone number.")
+
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -83,41 +87,57 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[DataRequired()]
     )
     image_link = StringField(
-        'image_link'
+        'image_link', validators=[URL(), DataRequired()]
     )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
-        'genres', validators=[DataRequired()],
+    'genres', validators=[DataRequired()],
+    choices=[
+        ('Alternative', 'Alternative'),
+        ('Blues', 'Blues'),
+        ('Classical', 'Classical'),
+        ('Country', 'Country'),
+        ('Electronic', 'Electronic'),
+        ('Folk', 'Folk'),
+        ('Funk', 'Funk'),
+        ('Hip-Hop', 'Hip-Hop'),
+        ('Heavy Metal', 'Heavy Metal'),
+        ('Instrumental', 'Instrumental'),
+        ('Jazz', 'Jazz'),
+        ('Musical Theatre', 'Musical Theatre'),
+        ('Pop', 'Pop'),
+        ('Punk', 'Punk'),
+        ('R&B', 'R&B'),
+        ('Reggae', 'Reggae'),
+        ('Rock n Roll', 'Rock n Roll'),
+        ('Soul', 'Soul'),
+        ('Other', 'Other'),
+    ]
+    )
+    seeking_talent = SelectField(
+        'seeking_talent', validators=[DataRequired()],
         choices=[
-            ('Alternative', 'Alternative'),
-            ('Blues', 'Blues'),
-            ('Classical', 'Classical'),
-            ('Country', 'Country'),
-            ('Electronic', 'Electronic'),
-            ('Folk', 'Folk'),
-            ('Funk', 'Funk'),
-            ('Hip-Hop', 'Hip-Hop'),
-            ('Heavy Metal', 'Heavy Metal'),
-            ('Instrumental', 'Instrumental'),
-            ('Jazz', 'Jazz'),
-            ('Musical Theatre', 'Musical Theatre'),
-            ('Pop', 'Pop'),
-            ('Punk', 'Punk'),
-            ('R&B', 'R&B'),
-            ('Reggae', 'Reggae'),
-            ('Rock n Roll', 'Rock n Roll'),
-            ('Soul', 'Soul'),
-            ('Other', 'Other'),
+            ('True', 'Yes'),
+            ('False', 'No'),
         ]
+    )
+    seeking_description = StringField(
+        'seeking_description'
+    )  
+    website = StringField(
+        'website', validators=[URL()]
     )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
     )
 
-class ArtistForm(Form):
+class ArtistForm(FlaskForm):
+    def validate_phone(form, field):
+        if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data):
+            raise ValidationError("Invalid phone number.")
+
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -180,15 +200,16 @@ class ArtistForm(Form):
             ('WY', 'WY'),
         ]
     )
+    address = StringField(
+        'address', validators=[DataRequired()]
+    )
     phone = StringField(
-        # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[DataRequired()]
     )
     image_link = StringField(
-        'image_link'
+        'image_link', validators=[URL(), DataRequired()]
     )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -212,9 +233,19 @@ class ArtistForm(Form):
             ('Other', 'Other'),
         ]
     )
+    seeking_venue = SelectField(
+        'seeking_venue', validators=[DataRequired()],
+        choices=[
+            ('True', 'Yes'),
+            ('False', 'No'),
+        ]
+    )
+    seeking_description = StringField(
+        'seeking_description'
+    )  
+    website = StringField(
+        'website', validators=[URL()]
+    )
     facebook_link = StringField(
-        # TODO implement enum restriction
         'facebook_link', validators=[URL()]
     )
-
-# TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
